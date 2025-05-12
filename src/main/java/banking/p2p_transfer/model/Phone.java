@@ -15,7 +15,7 @@ public class Phone {
     private Long id;
 
     @Column(unique = true)
-    @Pattern(regexp = "^\\+?[0-9]{11}$", message = "Неверный формат телефона")
+    @Pattern(regexp = "^[0-9]{11}$", message = "Неверный формат телефона")
     private String phone;
 
     @ManyToOne
