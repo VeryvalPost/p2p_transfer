@@ -10,16 +10,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    @Mapping(target = "account", source = "balance", qualifiedByName = "mapBalanceToAccount")
-    @Mapping(target = "phones", source = "phones", qualifiedByName = "mapPhones")
-    @Mapping(target = "emails", source = "emails", qualifiedByName = "mapEmails")
+    @Mapping(target = "account", source = "dto.balance", qualifiedByName = "mapBalanceToAccount")
+    @Mapping(target = "phones", ignore = true)
+    @Mapping(target = "emails", ignore = true)
     User toEntity(UserCreateDTO dto);
 
     @Mapping(target = "balance", source = "account.balance")
@@ -30,10 +29,9 @@ public interface UserMapper {
     List<UserResponseDTO> toDtoList(List<User> users);
 
     @Named("mapBalanceToAccount")
-    default Account mapBalanceToAccount(BigDecimal balance, User user) {
+    default Account mapBalanceToAccount(BigDecimal balance) {
         Account account = new Account();
         account.setBalance(balance != null ? balance : BigDecimal.ZERO);
-        account.setUser(user);
         return account;
     }
 
@@ -77,5 +75,21 @@ public interface UserMapper {
         return emails.stream()
                 .map(Email::getEmail)
                 .collect(Collectors.toList());
+    }
+
+    default User toEntityWithRelations(UserCreateDTO dto) {
+        User user = toEntity(dto);
+
+        Account account = mapBalanceToAccount(dto.getBalance());
+        account.setUser(user);
+        user.setAccount(account);
+
+        List<Phone> phones = mapPhones(dto.getPhones(), user);
+        user.setPhones(phones);
+
+        List<Email> emails = mapEmails(dto.getEmails(), user);
+        user.setEmails(emails);
+
+        return user;
     }
 }
