@@ -1,6 +1,7 @@
 package banking.p2p_transfer.util;
 
-import banking.p2p_transfer.dto.UserCreateDTO;
+
+import banking.p2p_transfer.dto.UserRequestDTO;
 import banking.p2p_transfer.dto.UserResponseDTO;
 import banking.p2p_transfer.model.User;
 import banking.p2p_transfer.model.Account;
@@ -19,7 +20,7 @@ public interface UserMapper {
     @Mapping(target = "account", source = "dto.balance", qualifiedByName = "mapBalanceToAccount")
     @Mapping(target = "phones", ignore = true)
     @Mapping(target = "emails", ignore = true)
-    User toEntity(UserCreateDTO dto);
+    User toEntity(UserRequestDTO dto);
 
     @Mapping(target = "balance", source = "account.balance")
     @Mapping(target = "phones", source = "phones", qualifiedByName = "mapPhonesToStrings")
@@ -77,7 +78,7 @@ public interface UserMapper {
                 .collect(Collectors.toList());
     }
 
-    default User toEntityWithRelations(UserCreateDTO dto) {
+    default User toEntityWithRelations(UserRequestDTO dto) {
         User user = toEntity(dto);
 
         Account account = mapBalanceToAccount(dto.getBalance());

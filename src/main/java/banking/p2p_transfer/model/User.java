@@ -34,4 +34,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Email> emails;
+
+    @Transient
+    public String getRole() {
+        return "ROLE_USER";
+    }
 }

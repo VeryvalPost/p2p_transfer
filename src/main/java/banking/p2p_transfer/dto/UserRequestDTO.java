@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class UserCreateDTO {
+public class UserRequestDTO {
     private String name;
     private LocalDate dateOfBirth;
     private String password;
