@@ -10,21 +10,21 @@ CREATE TABLE users (
 
 CREATE TABLE account (
                          id BIGSERIAL PRIMARY KEY,
-                         user_id BIGINT NOT NULL UNIQUE,
+                         users_id BIGINT NOT NULL UNIQUE,
                          balance DECIMAL(19, 2) NOT NULL CHECK (balance >= 0),
-                         CONSTRAINT fk_account_user FOREIGN KEY (user_id) REFERENCES users(id)
+                         CONSTRAINT fk_account_user FOREIGN KEY (users_id) REFERENCES users(id)
 );
 
 CREATE TABLE email_data (
                             id BIGSERIAL PRIMARY KEY,
                             email VARCHAR(255) NOT NULL UNIQUE,
-                            user_id BIGINT NOT NULL,
-                            CONSTRAINT fk_user_email FOREIGN KEY (user_id) REFERENCES users(id)
+                            users_id BIGINT NOT NULL,
+                            CONSTRAINT fk_user_email FOREIGN KEY (users_id) REFERENCES users(id)
 );
 
 CREATE TABLE phone_data (
                             id BIGSERIAL PRIMARY KEY,
                             phone VARCHAR(15) NOT NULL UNIQUE,
-                            user_id BIGINT NOT NULL,
-                            CONSTRAINT fk_user_phone FOREIGN KEY (user_id) REFERENCES users(id)
+                            users_id BIGINT NOT NULL,
+                            CONSTRAINT fk_user_phone FOREIGN KEY (users_id) REFERENCES users(id)
 );
