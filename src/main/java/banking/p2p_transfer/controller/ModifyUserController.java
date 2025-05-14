@@ -3,7 +3,7 @@ package banking.p2p_transfer.controller;
 import banking.p2p_transfer.dto.EmailDTO;
 import banking.p2p_transfer.dto.PhoneDTO;
 import banking.p2p_transfer.dto.SearchRequestDTO;
-import banking.p2p_transfer.model.User;
+import banking.p2p_transfer.dto.UserResponseDTO;
 import banking.p2p_transfer.service.EmailService;
 import banking.p2p_transfer.service.PhoneService;
 import banking.p2p_transfer.service.UserSearchService;
@@ -149,14 +149,17 @@ public class ModifyUserController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Поиск пользователей", description = "Поиск пользователей с фильтрацией по различным полям")
+    @ApiResponse(responseCode = "200", description = "Успешный поиск",
+            content = @Content(schema = @Schema(implementation = List.class)))
     @PostMapping("/findUser")
     public ResponseEntity<?> findUser(
             @Parameter(description = "Запрос на поиск пользователя", required = true)
-            @RequestBody SearchRequestDTO searchRequestDTO)  {
-        log.info("Запрос на поиск пользователя" );
-        List<User> findUser = userService.searchUser(searchRequestDTO);
+            @RequestBody SearchRequestDTO searchRequestDTO) {
+        log.info("Запрос на поиск пользователя");
+        List<UserResponseDTO> findUser = userService.searchUser(searchRequestDTO);
 
-        log.info("Пользователь с ID: {} успешно найден.", findUser);
-        return ResponseEntity.noContent().build();
+        log.info("Пользователи с подходящими под фильтр данными: {}", findUser);
+        return ResponseEntity.ok(findUser);
     }
 }

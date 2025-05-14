@@ -1,14 +1,18 @@
 package banking.p2p_transfer.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "account")
 public class Account {
     @Id
@@ -22,5 +26,9 @@ public class Account {
 
     @OneToOne
     @JoinColumn(name = "users_id", nullable = false, unique = true)
+    @JsonBackReference
     private User user;
+
+    @Version
+    private Long version;
 }

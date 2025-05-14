@@ -3,3 +3,7 @@ databaseChangeLog:
       file: db/changelog/changes/001-initial_data.sql
   - include:
       file: db/changelog/changes/002-add_users.sql
+  - include:
+      file: db/changelog/changes/003-transaction_data.sql
+  - include:
+      file: db/changelog/changes/004-add_account_update.sql

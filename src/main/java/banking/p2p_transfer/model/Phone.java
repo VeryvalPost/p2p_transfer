@@ -1,13 +1,17 @@
 package banking.p2p_transfer.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "phone_data")
 public class Phone {
     @Id
@@ -20,5 +24,6 @@ public class Phone {
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
+    @JsonBackReference
     private User user;
 }

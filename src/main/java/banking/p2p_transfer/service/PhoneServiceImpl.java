@@ -35,8 +35,7 @@ public class PhoneServiceImpl implements PhoneService {
                 Phone newPhone = phoneMapper.toEntity(phoneDTO);
                 newPhone.setUser(user);
                 phoneRepository.save(newPhone);
-                user.getPhones().add(newPhone);
-                userRepository.save(user);
+
                 return newPhone.getId();
             }
         } catch (ValidationException e) {
@@ -89,8 +88,7 @@ public class PhoneServiceImpl implements PhoneService {
         try {
             if (user.getPhones().size() > 1) {
                 phoneRepository.delete(deletingPhone);
-                user.getPhones().remove(deletingPhone);
-                userRepository.save(user);
+
             } else {
                 throw new ValidationException("Нельзя удалить последний телефон");
             }

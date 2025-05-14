@@ -1,10 +1,14 @@
 package banking.p2p_transfer.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "email_data")
 public class Email {
     @Id
@@ -16,5 +20,6 @@ public class Email {
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
+    @JsonBackReference
     private User user;
 }

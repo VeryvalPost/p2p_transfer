@@ -79,8 +79,8 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/auth/**").anonymous()
-                                .requestMatchers("/users/**").anonymous()
-                                .requestMatchers("/transfer/**").authenticated()
+                                .requestMatchers("/users/**").authenticated()
+                                .requestMatchers("/transactions/**").authenticated()
                                 .requestMatchers("/static/**", "/public/**", "/css/**", "/js/**").permitAll()
                                 .anyRequest().permitAll()
                 );

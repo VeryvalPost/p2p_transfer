@@ -67,7 +67,12 @@ public class JwtUtils {
             throw e;
         }
     }
-
+    public Long getUserIdFromAuthentication(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new JwtException("User not authenticated");
+        }
+        return ((UserDetailsImpl) authentication.getPrincipal()).getId();
+    }
     public boolean validateJwtToken(String authToken) {
         log.debug("Validating JWT: {}", authToken);
         try {

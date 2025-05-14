@@ -1,6 +1,7 @@
 package banking.p2p_transfer.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,6 +33,11 @@ public class ApplicationExceptionHandler {
     public ResponseEntity<String> handleGenericException(Exception ex) {
         log.error("Неизвестная ошибка: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Произошла ошибка. Пожалуйста, попробуйте позже.");
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public void handleConflict(OptimisticLockingFailureException ex) {
+        log.error("Конфликт транзакций: {}", ex.getMessage(), ex);
     }
 
 }

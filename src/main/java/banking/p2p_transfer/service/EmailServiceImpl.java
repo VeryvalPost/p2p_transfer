@@ -37,8 +37,7 @@ public class EmailServiceImpl implements EmailService {
                 Email newEmail = emailMapper.toEntity(emailDTO);
                 newEmail.setUser(user);
                 emailRepository.save(newEmail);
-                user.getEmails().add(newEmail);
-                userRepository.save(user);
+
                 return newEmail.getId();
             }
         } catch (ValidationException e) {
@@ -94,8 +93,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             if (user.getEmails().size()>1){
                 emailRepository.delete(deletingEmail);
-                user.getEmails().remove(deletingEmail);
-                userRepository.save(user);
+
             } else throw new ValidationException("Нельзя удалить последний email");
         } catch (Exception e) {
             throw new DatabaseException("Ошибка при удалении email: ", e);
