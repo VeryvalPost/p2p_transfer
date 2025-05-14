@@ -140,3 +140,26 @@ VALUES (
            'd.smirnov2@yandex.ru',
            (SELECT id FROM users WHERE name = 'Дмитрий Смирнов' LIMIT 1)
     );
+
+-- Пользователь 6
+INSERT INTO users (name, date_of_birth, password)
+VALUES ('admin', '1992-11-30', 'password')
+RETURNING id;
+
+INSERT INTO account (users_id, balance)
+VALUES (
+           (SELECT id FROM users WHERE name = 'admin' LIMIT 1),
+           5000.00
+       );
+
+INSERT INTO phone_data (phone, users_id)
+VALUES (
+           '79111111111',
+           (SELECT id FROM users WHERE name = 'admin' LIMIT 1)
+       );
+
+INSERT INTO email_data (email, users_id)
+VALUES (
+           'admin@mail.ru',
+           (SELECT id FROM users WHERE name = 'admin' LIMIT 1)
+       );

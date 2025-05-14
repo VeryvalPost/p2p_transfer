@@ -1,6 +1,5 @@
 package banking.p2p_transfer.util;
 
-
 import banking.p2p_transfer.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -10,8 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
@@ -25,43 +23,66 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
-
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        log.debug("Generating JWT for user ID: {}", userPrincipal.getId());
 
-        return Jwts.builder()
-                .claim("USER_ID", userPrincipal.getId())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(key(), SignatureAlgorithm.HS256)
-                .compact();
+        try {
+            String token = Jwts.builder()
+                    .claim("USER_ID", userPrincipal.getId())
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                    .signWith(key(), SignatureAlgorithm.HS256)
+                    .compact();
+            log.debug("Generated JWT: {}", token);
+            return token;
+        } catch (Exception e) {
+            log.error("Error generating JWT: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
-    private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    private SecretKey key() {
+        try {
+            byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+            return Keys.hmacShaKeyFor(keyBytes);
+        } catch (Exception e) {
+            log.error("Error decoding JWT secret: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public Long getUserIdFromJwtToken(String token) {
-        Claims claims = Jwts.parserBuilder().setSigningKey(key()).build()
-                .parseClaimsJws(token).getBody();
-        return claims.get("USER_ID", Long.class);
+        log.debug("Parsing JWT: {}", token);
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            Long userId = claims.get("USER_ID", Long.class);
+            log.debug("Extracted user ID: {}", userId);
+            return userId;
+        } catch (Exception e) {
+            log.error("Error parsing JWT: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public boolean validateJwtToken(String authToken) {
+        log.debug("Validating JWT: {}", authToken);
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key())
                     .build()
-                    .parse(authToken);
+                    .parseClaimsJws(authToken);
+            log.debug("JWT is valid");
             return true;
-        } catch (MalformedJwtException e) {
-            log.error("Invalid JWT token: {}", e.getMessage());
-        } catch (ExpiredJwtException e) {
-            log.error("JWT token is expired: {}", e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            log.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (JwtException e) {
+            log.error("JWT validation error: {}", e.getMessage(), e);
+            return false;
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims string is empty: {}", e.getMessage());
+            log.error("JWT token is empty or null: {}", e.getMessage(), e);
+            return false;
         }
-        return false;
     }
 }

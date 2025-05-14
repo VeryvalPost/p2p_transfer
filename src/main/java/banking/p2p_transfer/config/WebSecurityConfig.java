@@ -6,7 +6,6 @@ import banking.p2p_transfer.service.UserDetailsServiceImpl;
 import banking.p2p_transfer.util.AuthEntryPointJwt;
 import banking.p2p_transfer.util.AuthTokenFilter;
 import banking.p2p_transfer.util.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +14,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,13 +21,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 public class WebSecurityConfig {
-    @Autowired
+
     private final UserDetailsServiceImpl userDetailsService;
-    @Autowired
     private final JwtUtils jwtUtils;
-    @Autowired
     private final AuthEntryPointJwt unauthorizedHandler;
-    @Autowired
     private final UserRepository userRepository;
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
@@ -64,7 +59,17 @@ public class WebSecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return rawPassword.toString(); // Хранение пароля в открытом виде (для простоты)
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return rawPassword.toString().equals(encodedPassword);
+            }
+        };
     }
 
     @Bean
@@ -73,10 +78,9 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").anonymous()
-                                .requestMatchers("/").anonymous()
-                                .requestMatchers("/login").anonymous()
-                                .requestMatchers("/accounts**").authenticated()
+                        auth.requestMatchers("/auth/**").anonymous()
+                                .requestMatchers("/users/**").anonymous()
+                                .requestMatchers("/transfer/**").authenticated()
                                 .requestMatchers("/static/**", "/public/**", "/css/**", "/js/**").permitAll()
                                 .anyRequest().permitAll()
                 );
