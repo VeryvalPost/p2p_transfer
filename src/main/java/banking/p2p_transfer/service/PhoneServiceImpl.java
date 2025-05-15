@@ -9,6 +9,7 @@ import banking.p2p_transfer.model.User;
 import banking.p2p_transfer.repository.PhoneRepository;
 import banking.p2p_transfer.repository.UserRepository;
 import banking.p2p_transfer.util.PhoneMapper;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"userPhones", "phoneById", "phoneExists"}, allEntries = true)
     public Long createPhoneForUser(Long userId, PhoneDTO phoneDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
@@ -50,6 +52,7 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"userPhones", "phoneById", "phoneExists"}, allEntries = true)
     public String updatePhoneForUser(Long userId, Long phoneId, PhoneDTO phoneDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
@@ -75,6 +78,7 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"userPhones", "phoneById", "phoneExists"}, allEntries = true)
     public void deletePhoneForUser(Long userId, Long phoneId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));

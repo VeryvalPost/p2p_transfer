@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -153,6 +154,7 @@ public class ModifyUserController {
     @ApiResponse(responseCode = "200", description = "Успешный поиск",
             content = @Content(schema = @Schema(implementation = List.class)))
     @PostMapping("/findUser")
+    @Cacheable(value = "userSearch", key = "#searchRequestDTO.hashCode()")
     public ResponseEntity<?> findUser(
             @Parameter(description = "Запрос на поиск пользователя", required = true)
             @RequestBody SearchRequestDTO searchRequestDTO) {

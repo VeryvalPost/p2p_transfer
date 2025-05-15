@@ -1,6 +1,7 @@
 package banking.p2p_transfer.repository;
 
 import banking.p2p_transfer.model.Account;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
-
+    @Cacheable(value = "accountMeta", key = "#userId")
     @Query("SELECT a FROM Account a WHERE a.user.id = :userId")
     Optional<Account> findAccountByUser(Long userId);
 

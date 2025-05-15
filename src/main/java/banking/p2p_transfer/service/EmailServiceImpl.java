@@ -9,6 +9,7 @@ import banking.p2p_transfer.model.User;
 import banking.p2p_transfer.repository.EmailRepository;
 import banking.p2p_transfer.repository.UserRepository;
 import banking.p2p_transfer.util.EmailMapper;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"userEmails", "emailById", "emailExists", "userIdByEmail"}, allEntries = true)
     public Long createEmailForUser(Long userId, EmailDTO emailDTO) {
 
         User user = userRepository.findById(userId)
@@ -53,6 +55,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"userEmails", "emailById", "emailExists", "userIdByEmail"}, allEntries = true)
     public String updateEmailForUser(Long userId, Long emailId, EmailDTO newEmailDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
@@ -78,6 +81,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"userEmails", "emailById", "emailExists", "userIdByEmail"}, allEntries = true)
     public void deleteEmailForUser(Long userId, Long emailId) {
 
         User user = userRepository.findById(userId)
