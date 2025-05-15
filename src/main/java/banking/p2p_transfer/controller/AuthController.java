@@ -39,7 +39,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@RequestBody JwtRequest jwtRequest) {
         Long userId = emailRepository.findUserIdByEmail(jwtRequest.getEmail()).orElseThrow(()-> new UserNotFoundException("Пользователь с таким email не найден"));
         String userName = userRepository.findById(userId).get().getName();
-        System.out.println("User email from request: " + userName);
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userName, jwtRequest.getPassword()));
 

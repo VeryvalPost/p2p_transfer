@@ -9,11 +9,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.Serializable;
+
 @Entity
 @Getter
 @Setter
 @Table(name = "phone_data")
-public class Phone {
+public class Phone implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

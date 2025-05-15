@@ -31,9 +31,9 @@ class JwtUtilsTest {
 
 
         boolean isValid = jwtUtils.validateJwtToken(token);
-        assertTrue(isValid, "Token should be valid");
+        assertTrue(isValid, "Токен должен быть действительным");
 
         Long userId = jwtUtils.getUserIdFromJwtToken(token);
-        assertEquals(1L, userId, "User ID should match");
+        assertEquals(1L, userId, "User ID должен совпадать с ID пользователя в токене");
     }
 }

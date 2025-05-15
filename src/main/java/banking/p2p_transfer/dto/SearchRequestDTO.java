@@ -3,10 +3,11 @@ package banking.p2p_transfer.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-public class SearchRequestDTO {
+public class SearchRequestDTO implements Serializable {
     @Schema(description = "Дата рождения (ищутся пользователи с датой рождения после указанной)", example = "1990-01-01")
     private LocalDate dateOfBirth;
 

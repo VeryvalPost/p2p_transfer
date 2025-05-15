@@ -6,7 +6,6 @@ import banking.p2p_transfer.model.Account;
 import banking.p2p_transfer.model.Transaction;
 import banking.p2p_transfer.repository.AccountRepository;
 import banking.p2p_transfer.repository.TransactionRepository;
-import banking.p2p_transfer.repository.UserRepository;
 import banking.p2p_transfer.util.JwtUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,66 +40,65 @@ public class TransactionServiceImpl implements TransactionService {
             backoff = @Backoff(delay = 100))
     @Transactional(rollbackOn = Exception.class)
     public Long operateTransaction(TransactionDTO transactionDTO) {
+        log.info("Начало операции транзакции с параметрами: {}", transactionDTO);
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Long fromUserId = jwtUtils.getUserIdFromAuthentication(authentication);
+            Long toUserId = transactionDTO.getToUserId();
+            BigDecimal amount = transactionDTO.getAmount();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+                log.error("Сумма транзакции должна быть положительной: {}", amount);
+                throw new IllegalArgumentException("Сумма транзакции должна быть положительной");
+            }
 
-        Long fromUserId = jwtUtils.getUserIdFromAuthentication(authentication);
-        Long toUserId = transactionDTO.getToUserId();
-        BigDecimal amount = transactionDTO.getAmount();
+            Account accountFrom = accountRepository.findAccountByUser(fromUserId)
+                    .orElseThrow(() -> {
+                        log.error("Аккаунт отправителя не найден для пользователя ID: {}", fromUserId);
+                        return new UserNotFoundException("Аккаунт отправителя не найден для пользователя с ID: " + fromUserId);
+                    });
+            Account accountTo = accountRepository.findAccountByUser(toUserId)
+                    .orElseThrow(() -> {
+                        log.error("Аккаунт получателя не найден для пользователя ID: {}", toUserId);
+                        return new UserNotFoundException("Аккаунт получателя не найден для пользователя с ID: " + toUserId);
+                    });
 
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Сумма транзакции должна быть положительной");
+            log.debug("Начальные балансы - From: {}, To: {}", accountFrom.getBalance(), accountTo.getBalance());
+
+            if (accountFrom.getId().equals(accountTo.getId())) {
+                log.error("Попытка перевода средств на тот же аккаунт");
+                throw new IllegalStateException("Нельзя отправить на свой же аккаунт");
+            }
+
+            BigDecimal newBalanceFrom = accountFrom.getBalance().subtract(amount);
+            if (newBalanceFrom.compareTo(BigDecimal.ZERO) < 0) {
+                log.error("Недостаточно средств на счете отправителя. Текущий баланс: {}, сумма перевода: {}", accountFrom.getBalance(), amount);
+                throw new IllegalStateException("Недостаточно средств на счете отправителя");
+            }
+
+            accountFrom.setBalance(newBalanceFrom);
+            accountTo.setBalance(accountTo.getBalance().add(amount));
+
+            log.debug("Новые балансы - From: {}, To: {}", accountFrom.getBalance(), accountTo.getBalance());
+
+            accountRepository.saveAll(List.of(accountFrom, accountTo));
+            log.debug("Сохранены балансы - From: {}, To: {}", accountFrom.getBalance(), accountTo.getBalance());
+
+            Transaction newTransaction = new Transaction();
+            newTransaction.setAmount(amount);
+            newTransaction.setFromUserId(fromUserId);
+            newTransaction.setToUserId(toUserId);
+            newTransaction.setTimestamp(LocalDateTime.now());
+
+            transactionRepository.save(newTransaction);
+
+            log.info("Транзакция выполнена: от пользователя {} к пользователю {}, сумма: {}", fromUserId, toUserId, amount);
+            return newTransaction.getId();
+        } catch (Exception e) {
+            log.error("Ошибка при выполнении транзакции: {}", e.getMessage());
+            throw e;
+        } finally {
+            log.info("Завершение операции транзакции");
         }
-
-
-        Account accountFrom = accountRepository.findAccountByUser(fromUserId)
-                .orElseThrow(() -> new UserNotFoundException("Аккаунт отправителя не найден для пользователя с ID: " + fromUserId));
-        Account accountTo = accountRepository.findAccountByUser(toUserId)
-                .orElseThrow(() -> new UserNotFoundException("Аккаунт получателя не найден для пользователя с ID: " + toUserId));
-
-        log.debug("Начальные балансы - From: {}, To: {}",
-                accountFrom.getBalance(),
-                accountTo.getBalance());
-
-
-        if (accountFrom.getId().equals(accountTo.getId())) {
-            throw new IllegalStateException("Нельзя отправить на свой же аккаунт");
-        }
-
-        BigDecimal currentBalanceFrom = accountFrom.getBalance();
-        BigDecimal newBalanceFrom = currentBalanceFrom.subtract(amount);
-
-        if (newBalanceFrom.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalStateException("Недостаточно средств на счете отправителя");
-        }
-
-        accountFrom.setBalance(newBalanceFrom);
-        accountTo.setBalance(accountTo.getBalance().add(amount));
-
-        log.debug("Новые балансы - From: {}, To: {}",
-                accountFrom.getBalance(),
-                accountTo.getBalance());
-
-
-        accountRepository.saveAll(List.of(accountFrom, accountTo));
-        log.debug("Сохраненные балансы - From: {}, To: {}",
-                accountFrom.getBalance(),
-                accountFrom.getBalance());
-
-
-        Transaction newTransaction = new Transaction();
-
-        newTransaction.setAmount(amount);
-        newTransaction.setFromUserId(fromUserId);
-        newTransaction.setToUserId(toUserId);
-        newTransaction.setTimestamp(LocalDateTime.now());
-
-        transactionRepository.save(newTransaction);
-        log.info("Транзакция выполнена: от пользователя {} к пользователю {}, сумма: {}", fromUserId, toUserId, amount);
-
-        return newTransaction.getId();
     }
-
-
-
 }

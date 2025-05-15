@@ -13,9 +13,13 @@ services:
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=0000
       - SPRING_LIQUIBASE_ENABLED=true
+      - SPRING_DATA_REDIS_HOST=redis_transfer
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=0000
 
     depends_on:
       - db
+      - redis
     networks:
       - app_network
 
@@ -33,6 +37,16 @@ services:
     networks:
       - app_network
 
+  redis:
+    image: redis:latest
+    container_name: redis_transfer
+    command: ["redis-server", "--requirepass", "0000"]
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: 0000
+    networks:
+      - app_network
 
 volumes:
   postgres_data:

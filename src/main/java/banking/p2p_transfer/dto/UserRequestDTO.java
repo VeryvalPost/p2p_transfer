@@ -2,12 +2,13 @@ package banking.p2p_transfer.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class UserRequestDTO {
+public class UserRequestDTO implements Serializable {
     private String name;
     private LocalDate dateOfBirth;
     private String password;

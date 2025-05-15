@@ -4,11 +4,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class EmailDTO {
+public class EmailDTO implements Serializable {
     private Long id;
 
-    @NotBlank(message = "Email cannot be blank")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email не может быть пустым")
+    @Email(message = "Неверный формат email")
     private String email;
 }
