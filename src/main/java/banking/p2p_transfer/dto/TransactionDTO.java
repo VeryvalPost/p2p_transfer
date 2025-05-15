@@ -11,7 +11,7 @@ public class TransactionDTO {
     private Long id;
     private Long fromUserId;
     private Long toUserId;
-    private LocalDate date;
+    private LocalDate timestamp;
     private BigDecimal amount;
 
 }

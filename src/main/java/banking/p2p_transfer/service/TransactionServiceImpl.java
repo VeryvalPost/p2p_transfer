@@ -14,6 +14,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,7 +40,10 @@ public class TransactionServiceImpl implements TransactionService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100))
     @Transactional(rollbackOn = Exception.class)
-    public Long operateTransaction(Authentication authentication, TransactionDTO transactionDTO) {
+    public Long operateTransaction(TransactionDTO transactionDTO) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         Long fromUserId = jwtUtils.getUserIdFromAuthentication(authentication);
         Long toUserId = transactionDTO.getToUserId();
         BigDecimal amount = transactionDTO.getAmount();
@@ -54,6 +58,11 @@ public class TransactionServiceImpl implements TransactionService {
         Account accountTo = accountRepository.findAccountByUser(toUserId)
                 .orElseThrow(() -> new UserNotFoundException("Аккаунт получателя не найден для пользователя с ID: " + toUserId));
 
+        log.debug("Начальные балансы - From: {}, To: {}",
+                accountFrom.getBalance(),
+                accountTo.getBalance());
+
+
         if (accountFrom.getId().equals(accountTo.getId())) {
             throw new IllegalStateException("Нельзя отправить на свой же аккаунт");
         }
@@ -67,9 +76,18 @@ public class TransactionServiceImpl implements TransactionService {
 
         accountFrom.setBalance(newBalanceFrom);
         accountTo.setBalance(accountTo.getBalance().add(amount));
+        accountFrom.setVersion(accountFrom.getVersion() + 1);
+        accountTo.setVersion(accountTo.getVersion() + 1);
+
+        log.debug("Новые балансы - From: {}, To: {}",
+                accountFrom.getBalance(),
+                accountTo.getBalance());
 
         try {
             accountRepository.saveAll(List.of(accountFrom, accountTo));
+            log.debug("Сохраненные балансы - From: {}, To: {}",
+                    accountFrom.getBalance(),
+                    accountFrom.getBalance());
         } catch (OptimisticLockingFailureException ex) {
             log.warn("Конфликт версий при выполнении транзакции. Попытка повторной обработки.");
         }
@@ -79,7 +97,7 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setAmount(amount);
         newTransaction.setFromUserId(fromUserId);
         newTransaction.setToUserId(toUserId);
-        newTransaction.setDate(LocalDate.now());
+        newTransaction.setTimestamp(LocalDate.now());
 
         transactionRepository.save(newTransaction);
         log.info("Транзакция выполнена: от пользователя {} к пользователю {}, сумма: {}", fromUserId, toUserId, amount);

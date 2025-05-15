@@ -19,7 +19,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 19, scale = 2)
     @NotNull(message = "Не может быть null")
     @DecimalMin(value = "0.0", inclusive = true, message = "Баланс не может быть меньше 0")
     private BigDecimal balance;
@@ -28,6 +28,9 @@ public class Account {
     @JoinColumn(name = "users_id", nullable = false, unique = true)
     @JsonBackReference
     private User user;
+
+    @Column(name = "initial_balance", nullable = false, precision = 19, scale = 2)
+    private BigDecimal initialBalance;
 
     @Version
     private Long version;

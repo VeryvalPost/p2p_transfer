@@ -36,9 +36,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 Long userID = jwtUtils.getUserIdFromJwtToken(jwt);
                 User user = userRepository.findById(userID).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-                System.out.println(User.class.getName() + " " + user);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(user.getName());
-                System.out.println(userDetails.getUsername() + userDetails.getPassword());
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
