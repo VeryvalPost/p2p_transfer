@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class TransactionDTO {
@@ -11,7 +12,7 @@ public class TransactionDTO {
     private Long id;
     private Long fromUserId;
     private Long toUserId;
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
     private BigDecimal amount;
 
 }

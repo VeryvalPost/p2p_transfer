@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -76,28 +77,24 @@ public class TransactionServiceImpl implements TransactionService {
 
         accountFrom.setBalance(newBalanceFrom);
         accountTo.setBalance(accountTo.getBalance().add(amount));
-        accountFrom.setVersion(accountFrom.getVersion() + 1);
-        accountTo.setVersion(accountTo.getVersion() + 1);
 
         log.debug("Новые балансы - From: {}, To: {}",
                 accountFrom.getBalance(),
                 accountTo.getBalance());
 
-        try {
-            accountRepository.saveAll(List.of(accountFrom, accountTo));
-            log.debug("Сохраненные балансы - From: {}, To: {}",
-                    accountFrom.getBalance(),
-                    accountFrom.getBalance());
-        } catch (OptimisticLockingFailureException ex) {
-            log.warn("Конфликт версий при выполнении транзакции. Попытка повторной обработки.");
-        }
+
+        accountRepository.saveAll(List.of(accountFrom, accountTo));
+        log.debug("Сохраненные балансы - From: {}, To: {}",
+                accountFrom.getBalance(),
+                accountFrom.getBalance());
+
 
         Transaction newTransaction = new Transaction();
 
         newTransaction.setAmount(amount);
         newTransaction.setFromUserId(fromUserId);
         newTransaction.setToUserId(toUserId);
-        newTransaction.setTimestamp(LocalDate.now());
+        newTransaction.setTimestamp(LocalDateTime.now());
 
         transactionRepository.save(newTransaction);
         log.info("Транзакция выполнена: от пользователя {} к пользователю {}, сумма: {}", fromUserId, toUserId, amount);

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,5 +23,5 @@ public class Transaction {
     @Column
     private BigDecimal amount;
     @Column
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 }
