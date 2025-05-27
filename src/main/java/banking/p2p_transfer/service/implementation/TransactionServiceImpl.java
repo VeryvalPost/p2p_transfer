@@ -1,11 +1,12 @@
-package banking.p2p_transfer.service;
+package banking.p2p_transfer.service.implementation;
 
-import banking.p2p_transfer.dto.TransactionDTO;
+import banking.p2p_transfer.dto.TransactionRequestDTO;
 import banking.p2p_transfer.exception.UserNotFoundException;
 import banking.p2p_transfer.model.Account;
 import banking.p2p_transfer.model.Transaction;
 import banking.p2p_transfer.repository.AccountRepository;
 import banking.p2p_transfer.repository.TransactionRepository;
+import banking.p2p_transfer.service.TransactionService;
 import banking.p2p_transfer.util.JwtUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +40,13 @@ public class TransactionServiceImpl implements TransactionService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100))
     @Transactional(rollbackOn = Exception.class)
-    public Long operateTransaction(TransactionDTO transactionDTO) {
-        log.info("Начало операции транзакции с параметрами: {}", transactionDTO);
+    public Long operateTransaction(TransactionRequestDTO transactionRequestDTO) {
+        log.info("Начало операции транзакции с параметрами: {}", transactionRequestDTO);
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Long fromUserId = jwtUtils.getUserIdFromAuthentication(authentication);
-            Long toUserId = transactionDTO.getToUserId();
-            BigDecimal amount = transactionDTO.getAmount();
+            Long toUserId = transactionRequestDTO.getToUserId();
+            BigDecimal amount = transactionRequestDTO.getAmount();
 
             if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
                 log.error("Сумма транзакции должна быть положительной: {}", amount);

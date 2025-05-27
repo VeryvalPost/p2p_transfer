@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/users")
 @Tag(name = "Поиск пользователей", description = "API для поиска пользователей")
 public class UserSearchController {
 
@@ -36,7 +36,6 @@ public class UserSearchController {
             @RequestBody SearchRequestDTO searchRequestDTO) {
         log.info("Запрос на поиск пользователя");
         List<UserResponseDTO> users = userSearchService.searchUser(searchRequestDTO);
-        log.info("Найдено пользователей: {}", users);
         return ResponseEntity.ok(users);
     }
 }

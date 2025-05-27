@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/users/{userId}/emails", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/users/{userId}/emails")
 @Tag(name = "Email", description = "API для управления email пользователя")
 public class EmailController {
 
@@ -39,11 +39,10 @@ public class EmailController {
     })
     @PostMapping
     public ResponseEntity<Long> createEmail(
-            @Parameter(description = "ID пользователя", required = true) @PathVariable Long userId,
+            @Parameter(description = "ID пользователя", required = true) @PathVariable long userId,
             @Valid @RequestBody EmailDTO emailDTO) {
         log.info("Запрос на создание email для пользователя с ID: {}", userId);
         Long emailId = emailService.createEmailForUser(userId, emailDTO);
-        log.info("Email успешно создан с ID: {} для пользователя с ID: {}", emailId, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(emailId);
     }
 
@@ -58,12 +57,11 @@ public class EmailController {
     })
     @PutMapping("/{emailId}")
     public ResponseEntity<String> updateEmail(
-            @Parameter(description = "ID пользователя", required = true) @PathVariable Long userId,
+            @Parameter(description = "ID пользователя", required = true) @PathVariable long userId,
             @Parameter(description = "ID email", required = true) @PathVariable Long emailId,
             @Valid @RequestBody EmailDTO emailDTO) {
         log.info("Запрос на обновление email с ID: {} для пользователя с ID: {}", emailId, userId);
         String updatedEmail = emailService.updateEmailForUser(userId, emailId, emailDTO);
-        log.info("Email с ID: {} успешно обновлен для пользователя с ID: {}", emailId, userId);
         return ResponseEntity.ok(updatedEmail);
     }
 
@@ -76,11 +74,10 @@ public class EmailController {
     })
     @DeleteMapping("/{emailId}")
     public ResponseEntity<Void> deleteEmail(
-            @Parameter(description = "ID пользователя", required = true) @PathVariable Long userId,
+            @Parameter(description = "ID пользователя", required = true) @PathVariable long userId,
             @Parameter(description = "ID email", required = true) @PathVariable Long emailId) {
         log.info("Запрос на удаление email с ID: {} для пользователя с ID: {}", emailId, userId);
         emailService.deleteEmailForUser(userId, emailId);
-        log.info("Email с ID: {} успешно удален для пользователя с ID: {}", emailId, userId);
         return ResponseEntity.noContent().build();
     }
 }

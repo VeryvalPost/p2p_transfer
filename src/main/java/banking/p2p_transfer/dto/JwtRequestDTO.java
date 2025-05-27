@@ -2,14 +2,12 @@ package banking.p2p_transfer.dto;
 
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
-public class JwtRequest {
+public class JwtRequestDTO {
     private final String email;
     private final String password;
 
-    public JwtRequest(String email, String password) {
+    public JwtRequestDTO(String email, String password) {
         this.email = email;
         this.password = password;
     }

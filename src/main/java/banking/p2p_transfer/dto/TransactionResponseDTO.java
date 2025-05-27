@@ -1,19 +1,18 @@
 package banking.p2p_transfer.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-public class TransactionDTO implements Serializable {
-
+@Builder
+public class TransactionResponseDTO {
     private Long id;
+    private BigDecimal amount;
+    private String status;
+    private LocalDateTime timestamp;
     private Long fromUserId;
     private Long toUserId;
-    private LocalDateTime timestamp;
-    private BigDecimal amount;
-
 }

@@ -1,4 +1,4 @@
-package banking.p2p_transfer.service;
+package banking.p2p_transfer.service.implementation;
 
 import banking.p2p_transfer.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;

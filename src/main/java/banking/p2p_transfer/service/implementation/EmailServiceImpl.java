@@ -1,4 +1,4 @@
-package banking.p2p_transfer.service;
+package banking.p2p_transfer.service.implementation;
 
 import banking.p2p_transfer.dto.EmailDTO;
 import banking.p2p_transfer.exception.DatabaseException;
@@ -8,13 +8,12 @@ import banking.p2p_transfer.model.Email;
 import banking.p2p_transfer.model.User;
 import banking.p2p_transfer.repository.EmailRepository;
 import banking.p2p_transfer.repository.UserRepository;
+import banking.p2p_transfer.service.EmailService;
 import banking.p2p_transfer.util.EmailMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -103,11 +102,6 @@ public class EmailServiceImpl implements EmailService {
     @CacheEvict(value = {"userEmails", "emailById", "emailExists", "userIdByEmail"}, allEntries = true)
     public void deleteEmailForUser(Long userId, Long emailId) {
         log.info("Начало удаления email с ID: {} для пользователя с ID: {}", emailId, userId);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.error("Пользователь с ID {} не найден", userId);
-                    return new UserNotFoundException("Пользователь не найден");
-                });
         Email deletingEmail = emailRepository.findById(emailId)
                 .orElseThrow(() -> {
                     log.error("Email с ID {} не найден", emailId);

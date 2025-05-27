@@ -1,6 +1,6 @@
 package banking.p2p_transfer.util;
 
-import banking.p2p_transfer.service.UserDetailsImpl;
+import banking.p2p_transfer.service.implementation.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

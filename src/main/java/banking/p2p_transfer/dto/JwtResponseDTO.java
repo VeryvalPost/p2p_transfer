@@ -1,15 +1,21 @@
 package banking.p2p_transfer.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
-public class JwtResponse {
+public class JwtResponseDTO {
+    @Getter
     private final List<String> roles;
     private String token;
     private String type = "Bearer";
+    @Setter
+    @Getter
     private Long id;
 
 
-    public JwtResponse(String accessToken, Long id, List<String> roles) {
+    public JwtResponseDTO(String accessToken, Long id, List<String> roles) {
         this.token = accessToken;
         this.id = id;
         this.roles = roles;
@@ -31,15 +37,4 @@ public class JwtResponse {
         this.type = tokenType;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
 }

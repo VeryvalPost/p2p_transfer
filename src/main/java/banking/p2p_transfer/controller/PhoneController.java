@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/users/{userId}/phones", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/users/{userId}/phones")
 @Tag(name = "Телефон", description = "API для управления телефоном пользователя")
 public class PhoneController {
 
@@ -43,7 +43,6 @@ public class PhoneController {
             @Valid @RequestBody PhoneDTO phoneDTO) {
         log.info("Запрос на создание телефона для пользователя с ID: {}", userId);
         Long phoneId = phoneService.createPhoneForUser(userId, phoneDTO);
-        log.info("Телефон успешно создан с ID: {} для пользователя с ID: {}", phoneId, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(phoneId);
     }
 
@@ -63,7 +62,6 @@ public class PhoneController {
             @Valid @RequestBody PhoneDTO phoneDTO) {
         log.info("Запрос на обновление телефона с ID: {} для пользователя с ID: {}", phoneId, userId);
         String updatedPhone = phoneService.updatePhoneForUser(userId, phoneId, phoneDTO);
-        log.info("Телефон с ID: {} успешно обновлен для пользователя с ID: {}", phoneId, userId);
         return ResponseEntity.ok(updatedPhone);
     }
 
@@ -80,7 +78,6 @@ public class PhoneController {
             @Parameter(description = "ID телефона", required = true) @PathVariable Long phoneId) {
         log.info("Запрос на удаление телефона с ID: {} для пользователя с ID: {}", phoneId, userId);
         phoneService.deletePhoneForUser(userId, phoneId);
-        log.info("Телефон с ID: {} успешно удален для пользователя с ID: {}", phoneId, userId);
         return ResponseEntity.noContent().build();
     }
 }

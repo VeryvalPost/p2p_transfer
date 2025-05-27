@@ -1,10 +1,11 @@
 package banking.p2p_transfer.service;
 
-import banking.p2p_transfer.dto.TransactionDTO;
+import banking.p2p_transfer.dto.TransactionRequestDTO;
 import banking.p2p_transfer.model.Account;
 import banking.p2p_transfer.model.Transaction;
 import banking.p2p_transfer.repository.AccountRepository;
 import banking.p2p_transfer.repository.TransactionRepository;
+import banking.p2p_transfer.service.implementation.TransactionServiceImpl;
 import banking.p2p_transfer.util.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,7 +55,7 @@ class TransactionServiceImplTest {
         Long toUserId = 2L;
         BigDecimal amount = new BigDecimal("100.00");
 
-        TransactionDTO dto = new TransactionDTO();
+        TransactionRequestDTO dto = new TransactionRequestDTO();
         dto.setToUserId(toUserId);
         dto.setAmount(amount);
 
@@ -70,11 +70,7 @@ class TransactionServiceImplTest {
         when(jwtUtils.getUserIdFromAuthentication(authentication)).thenReturn(fromUserId);
         when(accountRepository.findAccountByUser(fromUserId)).thenReturn(Optional.of(accountFrom));
         when(accountRepository.findAccountByUser(toUserId)).thenReturn(Optional.of(accountTo));
-        OngoingStubbing<Transaction> transactionOngoingStubbing = when(transactionRepository.save(any(Transaction.class))).thenAnswer(invocation -> {
-            Transaction tx = invocation.getArgument(0);
-            tx.setId(100L);
-            return tx;
-        });
+
 
 
         Long transactionId = transactionService.operateTransaction(dto);
@@ -91,7 +87,7 @@ class TransactionServiceImplTest {
     @Test
     void testOperateTransaction_invalidAmount() {
 
-        TransactionDTO dto = new TransactionDTO();
+        TransactionRequestDTO dto = new TransactionRequestDTO();
         dto.setToUserId(2L);
         dto.setAmount(BigDecimal.ZERO);
 

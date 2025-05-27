@@ -1,7 +1,6 @@
 package banking.p2p_transfer.util;
 
-import banking.p2p_transfer.service.UserDetailsImpl;
-import lombok.extern.slf4j.Slf4j;
+import banking.p2p_transfer.service.implementation.UserDetailsImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

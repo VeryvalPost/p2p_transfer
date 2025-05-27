@@ -1,13 +1,11 @@
 package banking.p2p_transfer.service;
 
 import banking.p2p_transfer.dto.EmailDTO;
-import banking.p2p_transfer.exception.DatabaseException;
-import banking.p2p_transfer.exception.UserNotFoundException;
-import banking.p2p_transfer.exception.ValidationException;
 import banking.p2p_transfer.model.Email;
 import banking.p2p_transfer.model.User;
 import banking.p2p_transfer.repository.EmailRepository;
 import banking.p2p_transfer.repository.UserRepository;
+import banking.p2p_transfer.service.implementation.EmailServiceImpl;
 import banking.p2p_transfer.util.EmailMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

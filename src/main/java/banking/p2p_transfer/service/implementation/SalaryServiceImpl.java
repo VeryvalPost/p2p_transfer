@@ -1,23 +1,20 @@
-package banking.p2p_transfer.service;
+package banking.p2p_transfer.service.implementation;
 
-import banking.p2p_transfer.model.Account;
 import banking.p2p_transfer.repository.AccountRepository;
+import banking.p2p_transfer.service.SalaryService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 @Slf4j
 public class SalaryServiceImpl implements SalaryService {
     private final AccountRepository accountRepository;
-    private final BigDecimal MAX_SALARY = new BigDecimal("2.07");
-    private final BigDecimal INCREASE_RATE = new BigDecimal("0.1");
+    private static final BigDecimal MAX_SALARY = new BigDecimal("2.07");
+    private static final BigDecimal INCREASE_RATE = new BigDecimal("0.1");
 
     public SalaryServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;

@@ -2,7 +2,7 @@ package banking.p2p_transfer.util;
 
 import banking.p2p_transfer.model.User;
 import banking.p2p_transfer.repository.UserRepository;
-import banking.p2p_transfer.service.UserDetailsServiceImpl;
+import banking.p2p_transfer.service.implementation.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
