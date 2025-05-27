@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-public class SearchRequestDTO implements Serializable {
+public class SearchRequestDTO{
     @Schema(description = "Дата рождения (ищутся пользователи с датой рождения после указанной)", example = "1990-01-01")
     private LocalDate dateOfBirth;
 

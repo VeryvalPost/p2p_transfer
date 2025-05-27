@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class UserRequestDTO implements Serializable {
+public class UserRequestDTO  {
     private String name;
     private LocalDate dateOfBirth;
     private String password;
